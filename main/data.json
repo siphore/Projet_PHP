@@ -1,0 +1,30 @@
+[
+    {
+        "podcast_id": 1,
+        "title": "Autour du Bento",
+        "image_url": "..\/img\/autour_du_bento.png",
+        "audio_file": "..\/audios\/autourDuBentoEP1.mp3",
+        "artists": "Joshua Abessolo,Adem Ahmetovic,Micha\u00ebl Cheneval,Lohann Kasper,Miliran Ponniah"
+    },
+    {
+        "podcast_id": 2,
+        "title": "Le Bruit d'Internet",
+        "image_url": "..\/img\/M51-1-20230616_EnAccordeon_Vignette-Final.png",
+        "audio_file": "..\/audios\/EnAccordeon.mp3",
+        "artists": "C\u00e9dric Bartolacelli,Alexandre Hungerb\u00fchler,Antony Neyret,Micael Pinto Ribeiro,Fran\u00e7ois Cuennet"
+    },
+    {
+        "podcast_id": 3,
+        "title": "Richesses du Monde",
+        "image_url": "..\/img\/Richesses_du_monde.png",
+        "audio_file": "..\/audios\/Richesses du monde - Portugal Ep.1-Cuisine.mp3",
+        "artists": "Aur\u00e9lia Zima,H\u00e9lder Varela,Yonatan Teklezgi,Sophie Merciani,Zo\u00e9 Ma\u00eetre"
+    },
+    {
+        "podcast_id": 4,
+        "title": "ProgServ",
+        "image_url": "https:\/\/www.php.net\/images\/meta-image.png",
+        "audio_file": "..\/audios\/rickroll.mp3",
+        "artists": "Jean-Pierre Hess"
+    }
+]

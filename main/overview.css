@@ -1,0 +1,23 @@
+body {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    overflow-wrap: break-word;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+img {
+    /* align-self: center; */
+    width: 60vw;
+    height: 60vw;
+    box-shadow: 5px 5px 10px rgb(49, 49, 49);
+}
+
+@media (max-height: 600px) {
+    img {
+        width: 30vw;
+        height: 30vw;
+    }
+}
