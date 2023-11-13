@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/../myDB/config/autoload.php');
 
-// Start the sessions
+// Start the session
 session_start();
 
 DBManager::getPodcastData();
@@ -10,12 +10,14 @@ DBManager::getPodcastData();
 // If no session active
 if (!isset($_SESSION["username"])) {
     header("Location: ../login/login.php");
+    exit();
 }
 
 // Logout handling
 if (filter_has_var(INPUT_GET, 'logout')) {
     session_destroy();
     header("Location: ../login/login.php");
+    exit();
 }
 
 ?>
