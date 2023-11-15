@@ -88,6 +88,25 @@ class DBManager {
         }
     }
 
+    public static function updatePasswordFormData($email, $token, $tokenExpiry) {
+        // self::deleteFormData(self::ALL_USERS);
+
+        try {
+            self::$db = self::getDB();
+            $stmt = self::$db->prepare("INSERT INTO form_data (email, token, expiry) VALUES (:email, :token, :tokenExpiry)");
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':token', $token);
+            $stmt->bindParam(':tokenExpiry', $tokenExpiry);
+            $result = $stmt->execute();
+
+            return $result;
+        } catch (PDOException $e) {
+            // Handles any database connection or query errors
+            echo "Database error: " . $e->getMessage();
+            return false;
+        }
+    }
+
     public static function deleteFormData($username) {
         try {
             self::$db = self::getDB();

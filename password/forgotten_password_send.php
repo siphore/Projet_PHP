@@ -15,7 +15,7 @@ require_once(__DIR__ . '/../myDB/config/autoload.php');
 <body>
     <div class="sliding-background"></div>
     <div id="login-container">
-        <form action="process_form_password.php" method="post" autocomplete="off">
+        <form action="process_send_password.php" method="post" autocomplete="off">
             <div class="img-container">
                 <img src="../img/login_img.png" alt="Avatar" class="avatar">
             </div>
