@@ -1,35 +1,76 @@
 <?php
 
-require_once(__DIR__ . '/../myDB/config/autoload.php');
+//  User Clicks on the Link
+if (isset($_GET['token'])) {
+    $token = $_GET['token'];
+
+} 
+
+$tokenAvailable = verifyToken($token, $db); 
+
+function verifyToken($token, $pdo) {
+
+    // Prepare a SELECT query to retrieve the token information
+    $query = $pdo->prepare("SELECT * FROM password_reset WHERE token = ? AND expiry > CURRENT_TIMESTAMP");
+    $query->execute([$token]);
+
+    // Fetch the result
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        // Token is valid
+        return true;
+    } else {
+        // Token is invalid or expired
+        return false;
+    }
+}
+
+$sql = "SELECT * FROM user
+        WHERE reset_token_hash = ?";
+
+$stmt = $mysqli->prepare($sql);
+
+$stmt->bind_param("s", $token_hash);
+
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+$user = $result->fetch_assoc();
+
+if ($user === null) {
+    die("token not found");
+}
+
+if (strtotime($user["reset_token_expires_at"]) <= time()) {
+    die("token has expired");
+}
 
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>Reset Password</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forgotten password</title>
-    <link rel="stylesheet" href="../login/login.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 <body>
-    <div class="sliding-background"></div>
-    <div id="login-container">
-        <form action="process_send_password.php" method="post" autocomplete="off">
-            <div class="img-container">
-                <img src="../img/login_img.png" alt="Avatar" class="avatar">
-            </div>
 
-            <div class="container">
-                <label for="uname"><span class="bold">Username</span></label>
-                <input type="text" placeholder="Enter Username" name="uname" required autofocus>
+    <h1>Reset Password</h1>
 
-                <label for="email"><span class="bold">Email</span></label>
-                <input type="text" placeholder="Enter Email" name="email" required>
-                    
-                <button type="submit">Send</button>
-            </div>
-        </form>
-    </div>
+    <form method="post" action="process-reset-password.php">
+
+        <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+
+        <label for="password">New password</label>
+        <input type="password" id="password" name="password">
+
+        <label for="password_confirmation">Repeat password</label>
+        <input type="password" id="password_confirmation" name="password_confirmation">
+
+        <button>Send</button>
+    </form>
+
 </body>
 </html>
