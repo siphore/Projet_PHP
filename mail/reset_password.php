@@ -1,3 +1,34 @@
+<?php
+
+require_once('../myDB/config/autoload.php');
+
+$token = $_GET["token"];
+
+
+try {
+    $db = DBManager::getDB();
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $sql = "SELECT * FROM password_reset WHERE token = :token";
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+    $stmt->execute();
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user === false) {
+        die("Token not found");
+    }
+
+if (strtotime($user["expiry"]) <= time()) {
+    die("Token has expired");
+}
+
+} catch (PDOException $e) {
+die("Database connection error: " . $e->getMessage());
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,4 +59,4 @@
         </form>
     </div>
 </body>
-</html>
+</html> 

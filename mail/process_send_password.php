@@ -36,8 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 if (DBManager::emailExists($mail)) {
 
     // Generates Token and Send Email
-    $token = bin2hex(random_bytes(32)); // Generate a random token
-    $tokenExpiry = time() + 3600; // Token expires in 1 hour
+    $token = bin2hex(random_bytes(16)); // Generate a random token
+    $tokenExpiry = date("Y-m-d H:i:s", time() + 60 * 30);; // Token expires in 1 hour
     
     // Sends data to database
     DBManager::updatePasswordFormData($mail, $token, $tokenExpiry);

@@ -1,67 +1,67 @@
-<? 
+<?php
 
 require_once('../myDB/config/autoload.php');
 
-if (isset($_GET['token'])) {
-    $token = $_GET['token'];
-}
-
-$db = DBManager::getDB();
-
-$tokenAvailable = verifyToken($token, $db);
-
-function verifyToken($token, $db) {
-    // Prepare a SELECT query to retrieve the token information
-    $query = $db->prepare("SELECT * FROM password_reset WHERE token = $token AND expiry > CURRENT_TIMESTAMP");
-    $query->execute();
-
-    // Fetch the result
-    $result = $query->fetch(PDO::FETCH_ASSOC);
-
-    // fail si je laisse 
-    // if ($result) {
-    //     return true; 
-    // } else {
-    //     die("token not found");
-}; 
-
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve password from the form;
+    // Retrieve token and password from the form;
+    $token = $_POST['token'];
     $password = $_POST['password'];
-    $rPassword = $_POST['rPassword']; 
-};
+    $rPassword = $_POST['rPassword'];
 
-// Check if both passwords match
-if ($password === $rPassword) {
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-} else {
-    die("Passwords don't match, please try again");
-}
+    try {
+        $db = DBManager::getDB();
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-function getEmailByToken($token, $db) {
-    // Prepare a SELECT query to retrieve the email associated with the token
-    $query = $db->prepare("SELECT email FROM password_reset WHERE token = ?");
-    $query->execute([$token]);
+        $sql = "SELECT * FROM password_reset WHERE token = :token";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+        $stmt->execute();
 
-    // Fetch the result
-    $result = $query->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($result) {
-        // Return the email if the token is found
-        return $result['email'];
-    } else {
-        // Return null if the token is not found
-        return null;
+        if ($user === false) {
+            die("Token not found");
+        }
+
+        if (strtotime($user["expiry"]) <= time()) {
+            die("Token has expired");
+        }
+
+        $email = getEmailByToken($token, $db);
+
+        // Check if both passwords match
+        if ($password === $rPassword) {
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        } else {
+            die("Passwords don't match, please try again");
+        }
+
+        if ($email != null) {
+            DBManager::updatePassword($hashedPassword, $email);
+            echo "Password updated successfully!";
+        } else {
+            die("Email not found for the given token");
+        }
+    } catch (PDOException $e) {
+        die("Database connection error: " . $e->getMessage());
     }
 }
 
-$email = getEmailByToken($token, $db);
+function getEmailByToken($token, $db)
+{
+    try {
+        // Prepare a SELECT query to retrieve the email associated with the token
+        $query = $db->prepare("SELECT email FROM password_reset WHERE token = :token");
+        $query->bindParam(':token', $token, PDO::PARAM_STR);
+        $query->execute();
 
-if ($email != null) {
-    DBManager::updatePassword($hashedPassword, $email); 
+        // Fetch the result
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        // Return the email if the token is found, or null if the token is not found
+        return ($result !== false) ? $result['email'] : null;
+    } catch (PDOException $e) {
+        // Handle any database errors
+        die("Database error: " . $e->getMessage());
+    }
 }
-
-
-
-
