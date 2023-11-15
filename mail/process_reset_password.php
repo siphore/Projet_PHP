@@ -6,7 +6,7 @@ if (isset($_GET['token'])) {
     $token = $_GET['token'];
 }
 
-$db = DBManager::getDB(); 
+$db = DBManager::getDB();
 
 $tokenAvailable = verifyToken($token, $db);
 
