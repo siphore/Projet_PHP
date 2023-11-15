@@ -14,12 +14,11 @@ DBManager::createPasswordFormData();
 
 // Retrieves form data
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve the username and password from the form
-    $username = $_POST['uname'];
+    // Retrieve email from the form;
     $email = $_POST['email'];
 };
 
-
+// checks is the email exists in our database
 if (DBManager::emailExists($email)) {
 
     // Generates Token and Send Email

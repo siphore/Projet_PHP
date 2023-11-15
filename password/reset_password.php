@@ -1,10 +1,13 @@
 <?php
 
+require_once('../myDB/config/autoload.php');
+
 //  User Clicks on the Link
 if (isset($_GET['token'])) {
     $token = $_GET['token'];
 
 } 
+$db = DBManager::getDB(); 
 
 $tokenAvailable = verifyToken($token, $db); 
 
@@ -26,51 +29,36 @@ function verifyToken($token, $pdo) {
     }
 }
 
-$sql = "SELECT * FROM user
-        WHERE reset_token_hash = ?";
-
-$stmt = $mysqli->prepare($sql);
-
-$stmt->bind_param("s", $token_hash);
-
-$stmt->execute();
-
-$result = $stmt->get_result();
-
-$user = $result->fetch_assoc();
-
-if ($user === null) {
-    die("token not found");
-}
-
-if (strtotime($user["reset_token_expires_at"]) <= time()) {
-    die("token has expired");
-}
-
 ?>
-<!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
-    <title>Reset Password</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../login/login.css?v=<?php echo time(); ?>">
 </head>
 <body>
 
-    <h1>Reset Password</h1>
+    <div class="sliding-background"></div>
 
-    <form method="post" action="process-reset-password.php">
+    <div id="login-container">
+        <form action="process_form_login.php" method="post" autocomplete="off">
+            <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+            <div class="img-container">
+                <img src="../img/login_img.png" alt="Avatar" class="avatar">
+            </div>
 
-        <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+            <div class="container">
+                <label for="password"><span class="bold">New password</span></label>
+                <input type="password" placeholder="Enter password" name="password" required autofocus>
 
-        <label for="password">New password</label>
-        <input type="password" id="password" name="password">
-
-        <label for="password_confirmation">Repeat password</label>
-        <input type="password" id="password_confirmation" name="password_confirmation">
-
-        <button>Send</button>
-    </form>
-
+                <label for="Rpassword"><span class="bold">Repeat password</span></label>
+                <input type="Rpassword" placeholder="Enter password" name="Rpassword" required aurofocus>
+                    
+                <button type="submit">send</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

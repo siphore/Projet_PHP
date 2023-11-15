@@ -20,7 +20,7 @@ form {
     padding-top: 3vw;
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password], input[type=Rpassword] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -31,7 +31,7 @@ input[type=text], input[type=password] {
   transition: .1s ease-out;
 }
 
-input[type=text]:hover, input[type=password]:hover {
+input[type=text]:hover, input[type=password]:hover, input[type=Rpassword]:hover {
     border: 1px solid #7a7a7a;
     transition: ease-out .1s;
 }
