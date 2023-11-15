@@ -16,8 +16,6 @@ class DBManager {
     public static function createFormData() {
         try {
             self::$db = self::getDB();
-
-            // Query to add a user in the form_data table
             self::$db->exec("CREATE TABLE IF NOT EXISTS form_data (
                 id INTEGER PRIMARY KEY,
                 username TEXT UNIQUE,
@@ -34,7 +32,6 @@ class DBManager {
     public static function createPasswordFormData() {
         try {
             self::$db = self::getDB(); 
-            
             self::$db->exec("CREATE TABLE IF NOT EXISTS password_reset (
                 id INTEGER PRIMARY KEY,
                 email TEXT NOT NULL,
