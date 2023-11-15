@@ -1,17 +1,19 @@
 <? 
+
+require_once('../myDB/config/autoload.php');
+
 if (isset($_GET['token'])) {
     $token = $_GET['token'];
+}
 
-} 
 $db = DBManager::getDB(); 
 
-$tokenAvailable = verifyToken($token, $db); 
+$tokenAvailable = verifyToken($token, $db);
 
 function verifyToken($token, $db) {
-
     // Prepare a SELECT query to retrieve the token information
-    $query = $db->prepare("SELECT * FROM password_reset WHERE token = ? AND expiry > CURRENT_TIMESTAMP");
-    $query->execute([$token]);
+    $query = $db->prepare("SELECT * FROM password_reset WHERE token = $token AND expiry > CURRENT_TIMESTAMP");
+    $query->execute();
 
     // Fetch the result
     $result = $query->fetch(PDO::FETCH_ASSOC);
@@ -25,12 +27,12 @@ function verifyToken($token, $db) {
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve email from the form;
+    // Retrieve password from the form;
     $password = $_POST['password'];
     $rPassword = $_POST['rPassword']; 
 };
 
-// checks is both passwords match
+// Check if both passwords match
 if ($password === $rPassword) {
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 } else {

@@ -10,38 +10,53 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 
-DBManager::createPasswordFormData(); 
+// Is user on windows or mac
+$user_agent = getenv("HTTP_USER_AGENT");
+if (strpos($user_agent, "Win") !== FALSE) $os = "Windows";
+else if (strpos($user_agent, "Mac") !== FALSE) $os = "Mac";
+
+// Get root directory
+$dir = explode(DIRECTORY_SEPARATOR, __DIR__);
+$root = [];
+foreach($dir as $path) {
+    array_push($root, $path);
+    if ($path === "htdocs") break;
+}
+$root = implode('/', array_diff($dir, $root)).'/';
+
+DBManager::createPasswordFormData();
 
 // Retrieves form data
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve email from the form;
-    $email = $_POST['email'];
+    $mail = $_POST['email'];
 };
 
 // checks is the email exists in our database
-if (DBManager::emailExists($email)) {
+if (DBManager::emailExists($mail)) {
 
     // Generates Token and Send Email
     $token = bin2hex(random_bytes(32)); // Generate a random token
     $tokenExpiry = time() + 3600; // Token expires in 1 hour
     
     // Sends data to database
-    DBManager::updatePasswordFormData($email, $token, $tokenExpiry); 
+    DBManager::updatePasswordFormData($mail, $token, $tokenExpiry);
 
     // MailHog awaits  mails on 1025 port
     $transport = Transport::fromDsn('smtp://localhost:1025');
-    // mail construction
+    // Mail construction
     $mailer = new Mailer($transport);
     $email = (new Email())
         ->from('lohann.kasper@heig-vd.ch')
-        ->to("$email")
+        ->to("$mail")
         //->cc('cc@exemple.com')
         //->bcc('bcc@exemple.com')
         //->replyTo('replyto@exemple.com')
         ->priority(Email::PRIORITY_HIGH)
         ->subject("Concerne : Change of password")
-        ->text("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password")
-        ->html("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password");
+        // ->text("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password")
+        // ->html("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password");
+        ->text("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php>here </a> to reset your password")
+        ->html("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php>here </a> to reset your password");
     $result = $mailer->send($email);
 
     if ($result==null) echo "Un mail de récupération a été envoyé ! <a href='http://localhost:8025'>voir le mail</a>";
@@ -49,3 +64,5 @@ if (DBManager::emailExists($email)) {
 } else {
     echo "L'adresse email n'est pas rattachée à un compte existant.";
 }
+
+?>

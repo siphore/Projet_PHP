@@ -86,8 +86,6 @@ class DBManager {
     }
 
     public static function updatePassword ($password, $email) {
-        // self::deleteFormData(self::ALL_USERS);
-
         try {
             self::$db = self::getDB();
             $stmt = self::$db->prepare("UPDATE form_data SET psw = $password WHERE email = $email;");
@@ -178,6 +176,21 @@ class DBManager {
             return false;
         }
     }
+
+    // public static function getPasswordResetData($userId) {
+    //     try {
+    //         self::$db = self::getDB();
+    //         $stmt = self::$db->prepare("SELECT * FROM password_reset WHERE user_id = :user_id");
+    //         $stmt->bindParam(':user_id', $userId);
+    //         $result = $stmt->execut();
+
+    //         return $result;
+    //     } catch (PDOException $e) {
+    //         // Handles any database connection or query errors
+    //         echo "Database error: " . $e->getMessage();
+    //         return false;
+    //     }
+    // }
 
     public static function usernameExists($username) {
         try {

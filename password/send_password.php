@@ -1,9 +1,3 @@
-<?php
-
-require_once(__DIR__ . '/../myDB/config/autoload.php');
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +8,7 @@ require_once(__DIR__ . '/../myDB/config/autoload.php');
 </head>
 <body>
     <div class="sliding-background"></div>
+    
     <div id="login-container">
         <form action="process_send_password.php" method="post" autocomplete="off">
             <div class="img-container">
@@ -22,8 +17,7 @@ require_once(__DIR__ . '/../myDB/config/autoload.php');
 
             <div class="container">
                 <label for="email"><span class="bold">Email</span></label>
-                <input type="text" placeholder="Enter Email" name="email" required>
-                    
+                <input type="text" placeholder="Enter Email" name="email" required autofocus>
                 <button type="submit">Send</button>
             </div>
         </form>
