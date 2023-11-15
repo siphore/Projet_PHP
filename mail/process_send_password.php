@@ -22,7 +22,7 @@ foreach($dir as $path) {
     array_push($root, $path);
     if ($path === "htdocs") break;
 }
-$root = implode('/', array_diff($dir, $root)).'/';
+$root = implode(DIRECTORY_SEPARATOR, array_diff($dir, $root)).DIRECTORY_SEPARATOR;
 
 DBManager::createPasswordFormData();
 
@@ -53,8 +53,8 @@ if (DBManager::emailExists($mail)) {
         //->replyTo('replyto@exemple.com')
         ->priority(Email::PRIORITY_HIGH)
         ->subject("Concerne : Change of password")
-        // ->text("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password")
-        // ->html("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password");
+        // ->text("Click <a href=http://localhost:8888/mail/reset_password.php?token=$token>here </a> to reset your password")
+        // ->html("Click <a href=http://localhost:8888/mail/reset_password.php?token=$token>here </a> to reset your password");
         ->text("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php>here </a> to reset your password")
         ->html("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php>here </a> to reset your password");
     $result = $mailer->send($email);
