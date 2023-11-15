@@ -31,6 +31,23 @@ class DBManager {
         }
     }
 
+    public static function createPasswordFormData() {
+        try {
+            self::$db = self::getDB(); 
+            
+            self::$db->exec("CREATE TABLE IF NOT EXISTS password_reset (
+                id INTEGER PRIMARY KEY,
+                email TEXT NOT NULL,
+                token TEXT NOT NULL,
+                expiry DATETIME NOT NULL
+            )");
+        } catch (PDOException $e) {
+            // Handles any database connection or query errors
+            echo "Database error: " . $e->getMessage();
+            return false;
+        }
+    }
+
     public static function readFormData($username) {
         try {
             self::$db = self::getDB();

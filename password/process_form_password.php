@@ -4,11 +4,13 @@
 // Remarque : Pour que cela fonctionne, il faut avoir démarré le serveur ;-)
 // Libraire permettant l'envoi de mail (Symfony Mailer)
 require_once './lib/vendor/autoload.php';
-require_once(__DIR__ . '/../myDB/config/autoload.php');
+require_once('../myDB/config/autoload.php');
 
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
+
+DBManager::createPasswordFormData(); 
 
 // Retrieves form data
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -17,10 +19,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
 };
 
-if ($DBManager::emailExists($email)) {
-    // MailHog attend les mails sur le port 1025
+
+if (DBManager::emailExists($email)) {
+
+    // Generates Token and Send Email
+    $token = bin2hex(random_bytes(32)); // Generate a random token
+    $tokenExpiry = time() + 3600; // Token expires in 1 hour
+    
+
+    // MailHog awaits  mails on 1025 port
     $transport = Transport::fromDsn('smtp://localhost:1025');
-    // Construction du mail
+    // mail construction
     $mailer = new Mailer($transport);
     $email = (new Email())
         ->from('lohann.kasper@heig-vd.ch')
