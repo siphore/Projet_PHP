@@ -35,7 +35,7 @@ function verifyToken($token, $pdo) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Reset password</title>
     <link rel="stylesheet" href="../login/login.css?v=<?php echo time(); ?>">
 </head>
 <body>
@@ -43,7 +43,7 @@ function verifyToken($token, $pdo) {
     <div class="sliding-background"></div>
 
     <div id="login-container">
-        <form action="process_form_login.php" method="post" autocomplete="off">
+        <form action="process_reset_password.php" method="post" autocomplete="off">
             <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
             <div class="img-container">
                 <img src="../img/login_img.png" alt="Avatar" class="avatar">
