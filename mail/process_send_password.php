@@ -23,6 +23,7 @@ foreach($dir as $path) {
     if ($path === "htdocs") break;
 }
 $root = implode(DIRECTORY_SEPARATOR, array_diff($dir, $root)).DIRECTORY_SEPARATOR;
+echo $root; 
 
 DBManager::createPasswordFormData();
 
@@ -55,8 +56,8 @@ if (DBManager::emailExists($mail)) {
         ->subject("Concerne : Change of password")
         // ->text("Click <a href=http://localhost:8888/mail/reset_password.php?token=$token>here </a> to reset your password")
         // ->html("Click <a href=http://localhost:8888/mail/reset_password.php?token=$token>here </a> to reset your password");
-        ->text("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php>here </a> to reset your password")
-        ->html("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php>here </a> to reset your password");
+        ->text("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR."mail".DIRECTORY_SEPARATOR."reset_password.php?token=$token>here </a> to reset your password")
+        ->html("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR."mail".DIRECTORY_SEPARATOR."reset_password.php?token=$token>here </a> to reset your password");
     $result = $mailer->send($email);
 
     if ($result==null) echo "Un mail de récupération a été envoyé ! <a href='http://localhost:8025'>voir le mail</a>";
