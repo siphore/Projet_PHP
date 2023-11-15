@@ -20,13 +20,9 @@ function verifyToken($token, $pdo) {
     // Fetch the result
     $result = $query->fetch(PDO::FETCH_ASSOC);
 
-    if ($result) {
-        // Token is valid
-        return true;
-    } else {
-        // Token is invalid or expired
-        return false;
-    }
+    if (!$result) {
+        die("token error");
+    } 
 }
 
 ?>
@@ -54,7 +50,7 @@ function verifyToken($token, $pdo) {
                 <input type="password" placeholder="Enter password" name="password" required autofocus>
 
                 <label for="Rpassword"><span class="bold">Repeat password</span></label>
-                <input type="Rpassword" placeholder="Enter password" name="Rpassword" required aurofocus>
+                <input type="Rpassword" placeholder="Enter password" name="rPassword" required aurofocus>
                     
                 <button type="submit">send</button>
             </div>

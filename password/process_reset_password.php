@@ -17,16 +17,26 @@ function verifyToken($token, $db) {
     $result = $query->fetch(PDO::FETCH_ASSOC);
 
     if ($result) {
-        // Token is valid
-        return true;
+        return true; 
     } else {
-        // Token is invalid or expired
-        return false;
-    }
+        die("token not found");
+    }; 
 } 
 
-function getEmailByToken($token, $db) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve email from the form;
+    $password = $_POST['password'];
+    $rPassword = $_POST['rPassword']; 
+};
 
+// checks is both passwords match
+if ($password === $rPassword) {
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+} else {
+    die("Passwords don't match, please try again");
+}
+
+function getEmailByToken($token, $db) {
     // Prepare a SELECT query to retrieve the email associated with the token
     $query = $db->prepare("SELECT email FROM password_reset WHERE token = ?");
     $query->execute([$token]);
@@ -45,11 +55,10 @@ function getEmailByToken($token, $db) {
 
 $email = getEmailByToken($token, $db);
 
-if ($email !== null) {
-    // Token is valid, proceed with the email (e.g., for password reset)
-    echo "Email associated with the token: $email";
-} else {
-    // Token is invalid or not found, handle accordingly (e.g., show an error message)
-    echo 'Invalid or expired token';
+if ($email != null) {
+    DBManager::updatePassword($hashedPassword, $email); 
 }
+
+
+
 

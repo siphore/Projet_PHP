@@ -39,7 +39,7 @@ if (DBManager::emailExists($email)) {
         //->bcc('bcc@exemple.com')
         //->replyTo('replyto@exemple.com')
         ->priority(Email::PRIORITY_HIGH)
-        ->subject("Concerne $username : Récupération mot de passe")
+        ->subject("Concerne : Change of password")
         ->text("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password")
         ->html("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password");
     $result = $mailer->send($email);
