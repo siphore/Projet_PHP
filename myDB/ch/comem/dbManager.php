@@ -93,7 +93,7 @@ class DBManager {
 
         try {
             self::$db = self::getDB();
-            $stmt = self::$db->prepare("INSERT INTO form_data (email, token, expiry) VALUES (:email, :token, :tokenExpiry)");
+            $stmt = self::$db->prepare("INSERT INTO password_reset (email, token, expiry) VALUES (:email, :token, :tokenExpiry)");
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':token', $token);
             $stmt->bindParam(':tokenExpiry', $tokenExpiry);

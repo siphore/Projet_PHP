@@ -21,9 +21,6 @@ require_once(__DIR__ . '/../myDB/config/autoload.php');
             </div>
 
             <div class="container">
-                <label for="uname"><span class="bold">Username</span></label>
-                <input type="text" placeholder="Enter Username" name="uname" required autofocus>
-
                 <label for="email"><span class="bold">Email</span></label>
                 <input type="text" placeholder="Enter Email" name="email" required>
                     

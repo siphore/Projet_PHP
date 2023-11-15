@@ -26,6 +26,8 @@ if (DBManager::emailExists($email)) {
     $token = bin2hex(random_bytes(32)); // Generate a random token
     $tokenExpiry = time() + 3600; // Token expires in 1 hour
     
+    // Sends data to database
+    DBManager::updatePasswordFormData($email, $token, $tokenExpiry); 
 
     // MailHog awaits  mails on 1025 port
     $transport = Transport::fromDsn('smtp://localhost:1025');
@@ -39,8 +41,8 @@ if (DBManager::emailExists($email)) {
         //->replyTo('replyto@exemple.com')
         ->priority(Email::PRIORITY_HIGH)
         ->subject("Concerne $username : Récupération mot de passe")
-        ->text('Un peu de texte')
-        ->html('<h1>Un peu de html</h1>');
+        ->text("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password")
+        ->html("Click <a href=http://localhost:8888/password/reset_password.php?token=$token>here </a> to reset your password");
     $result = $mailer->send($email);
 
     if ($result==null) echo "Un mail de récupération a été envoyé ! <a href='http://localhost:8025'>voir le mail</a>";
