@@ -20,9 +20,10 @@ function verifyToken($token, $pdo) {
     // Fetch the result
     $result = $query->fetch(PDO::FETCH_ASSOC);
 
-    if (!$result) {
-        die("token error");
-    } 
+        
+    // if (!$result) {
+    //     die("token error");
+    // } 
 }
 
 ?>

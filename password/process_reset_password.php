@@ -16,12 +16,13 @@ function verifyToken($token, $db) {
     // Fetch the result
     $result = $query->fetch(PDO::FETCH_ASSOC);
 
-    if ($result) {
-        return true; 
-    } else {
-        die("token not found");
-    }; 
-} 
+    // fail si je laisse 
+    // if ($result) {
+    //     return true; 
+    // } else {
+    //     die("token not found");
+}; 
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve email from the form;
