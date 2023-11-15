@@ -47,8 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-function getEmailByToken($token, $db)
-{
+function getEmailByToken($token, $db) {
     try {
         // Prepare a SELECT query to retrieve the email associated with the token
         $query = $db->prepare("SELECT email FROM password_reset WHERE token = :token");

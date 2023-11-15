@@ -4,7 +4,6 @@ require_once('../myDB/config/autoload.php');
 
 $token = $_GET["token"];
 
-
 try {
     $db = DBManager::getDB();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

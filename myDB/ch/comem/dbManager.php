@@ -88,7 +88,9 @@ class DBManager {
     public static function updatePassword ($password, $email) {
         try {
             self::$db = self::getDB();
-            $stmt = self::$db->prepare("UPDATE form_data SET psw = $password WHERE email = $email;");
+            $stmt = self::$db->prepare("UPDATE form_data SET psw = :psw WHERE email = :email");
+            $stmt->bindParam(":psw", $password);
+            $stmt->bindParam(":email", $email);
             $result = $stmt->execute();
 
             return $result;
