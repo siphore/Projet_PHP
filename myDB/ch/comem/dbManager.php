@@ -7,6 +7,10 @@ class DBManager {
     public static function getDB() {
         if (self::$db === null) {
             $config = parse_ini_file("../myDB/config/db.ini");
+            // echo $config["dsn"]."<br>";
+            // $dbPath = str_replace('|', DIRECTORY_SEPARATOR, $config["dsn"]);
+            // echo $dbPath."<br>";
+            // self::$db = new PDO($dbPath);
             self::$db = new PDO($config["dsn"]);
         }
 
