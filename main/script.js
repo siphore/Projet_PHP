@@ -148,6 +148,7 @@ function filterCards() {
     });
 }
 
+// ???
 function openPopup(id) {
     const modal = document.querySelector('.modal');
     const modalContent = document.querySelector('.modal-content');
