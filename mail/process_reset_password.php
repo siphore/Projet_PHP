@@ -38,7 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($email != null) {
             DBManager::updatePassword($hashedPassword, $email);
-            echo "Password updated successfully!";
+            echo "Password updated successfully!<br>";
+            echo "Revenir au <a href='../login/login.php'>login</a>";
         } else {
             die("Email not found for the given token");
         }

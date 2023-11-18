@@ -52,17 +52,17 @@ if (DBManager::emailExists($mail)) {
         //->bcc('bcc@exemple.com')
         //->replyTo('replyto@exemple.com')
         ->priority(Email::PRIORITY_HIGH)
-        ->subject("Concerne : Change of password")
-        ->text("Click <a href=http://localhost:8888/mail/reset_password.php?token=$token>here </a> to reset your password")
-        ->html("Click <a href=http://localhost:8888/mail/reset_password.php?token=$token>here </a> to reset your password");
-        // ->text("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888".DIRECTORY_SEPARATOR."mail").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token>here </a> to reset your password")
-        // ->html("Click <a href=http://localhost:".($os === "Windows" ? "80" : "8888".DIRECTORY_SEPARATOR."mail").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token>here </a> to reset your password");
+        ->subject("Reset password")
+        ->text("Click <a target='_self' href='localhost:".($os === "Windows" ? "80" : "8888".DIRECTORY_SEPARATOR."mail").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password")
+        ->html("Click <a target='_self' href='localhost:".($os === "Windows" ? "80" : "8888".DIRECTORY_SEPARATOR."mail").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password");
+        // ->text("Click <a target='_self' href='http://localhost:".($os === "Windows" ? "80" : "8888".DIRECTORY_SEPARATOR."mail").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password")
+        // ->html("Click <a target='_self' href='http://localhost:".($os === "Windows" ? "80" : "8888".DIRECTORY_SEPARATOR."mail").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password");
     $result = $mailer->send($email);
 
     if ($result==null) echo "Un mail de récupération a été envoyé ! <a href='http://localhost:8025'>voir le mail</a>";
     else echo "Un problème lors de l'envoi du mail est survenu";
 } else {
-    echo "L'adresse email n'est pas rattachée à un compte existant.";
+    die("L'adresse email n'est pas rattachée à un compte existant.");
 }
 
 ?>
