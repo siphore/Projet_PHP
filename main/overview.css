@@ -15,6 +15,15 @@ img {
     box-shadow: 5px 5px 10px rgb(49, 49, 49);
 }
 
+.form-group {
+    margin-bottom: 15px; /* Adjust spacing between form groups */
+}
+
+label {
+    display: block; /* Make labels block-level elements */
+    margin-bottom: 5px; /* Adjust spacing between labels and inputs */
+}
+
 @media (max-height: 600px) {
     img {
         width: 30vw;

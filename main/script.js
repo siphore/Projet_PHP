@@ -166,7 +166,7 @@ function openPopup(id) {
 
     // Setup iframe to send podcast_id to overview.php
     const iframe = document.querySelector('.iframe-container iframe');
-    iframe.src = 'overview.php?data=' + encodeURIComponent(id);
+    iframe.src = 'overview.php?data=' + encodeURIComponent(id) + " " + encodeURIComponent(false);
 
     modal.addEventListener('click', closePopupOutside);
 }
