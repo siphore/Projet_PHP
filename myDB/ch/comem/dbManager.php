@@ -185,28 +185,25 @@ class DBManager {
         }
     }
 
-    public static function updatePodcast($id, $title, $oldArtists, $newArtists) {
+    public static function updatePodcast($id, $title, $artistsId, $artists, $audio, $img) {
         try {
             self::$db = self::getDB();
 
-            // Update title
-            $stmt = self::$db->prepare("UPDATE podcasts SET title = :title WHERE podcast_id = :podcast_id");
+            // Update title, img & audio
+            $stmt = self::$db->prepare("UPDATE podcasts SET title = :title, image_url = :image_url, audio_file = :audio_file WHERE podcast_id = :podcast_id");
             $stmt->bindParam(':podcast_id', $id);
             $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':image_url', $img);
+            $stmt->bindParam(':audio_file', $audio);
             $stmt->execute();
 
             // Update artists
-            $oldArtists = explode(",", $oldArtists);
-            $newArtists = explode(",", $newArtists);
-            for ($i = 0; $i < count($oldArtists); ++$i) {
-                $oldArtist = explode(" ", $oldArtists[$i]);
-                $oldFname = $oldArtist[0];
-                $oldLname = $oldArtist[1];
-                $artistId = self::getArtistFromNames($oldFname, $oldLname);
-
-                $newArtist = explode(" ", $newArtists[$i]);
-                $fname = $newArtist[0];
-                $lname = $newArtist[1];
+            $artists = explode(",", $artists);
+            for ($i = 0; $i < count($artists); ++$i) {
+                $artist = explode(" ", $artists[$i]);
+                $fname = $artist[0];
+                $lname = $artist[1];
+                $artistId = $artistsId[$i];
 
                 $stmt = self::$db->prepare("UPDATE artists SET fname = :fname, lname = :lname WHERE artist_id = :artist_id");
                 $stmt->bindParam(':artist_id', $artistId);
@@ -222,18 +219,19 @@ class DBManager {
         }
     }
     
-    private static function getArtistFromNames($fname, $lname) {
+    public static function getArtistIdFromNames($artist) {
         try {
             self::$db = self::getDB();
+            $artist = explode(" ", $artist);
+            $fname = $artist[0];
+            $lname = $artist[1];
+
             $stmt = self::$db->prepare("SELECT artist_id FROM artists WHERE fname = :fname and lname = :lname");
             $stmt->bindParam(':fname', $fname);
             $stmt->bindParam(':lname', $lname);
             $stmt->execute();
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            // Close the database connection
-            // self::$db = null;
 
             return $result['artist_id'];
         } catch (PDOException $e) {
