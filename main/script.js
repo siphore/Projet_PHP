@@ -69,7 +69,8 @@ function init() {
         card.appendChild(artists);
         card.appendChild(artistsList);
 
-        container.appendChild(card);
+        const newPodcast = container.querySelector("#new");
+        container.insertBefore(card, newPodcast);
     });
 
     collapse();
@@ -137,6 +138,14 @@ function filterCards() {
     const input = document.getElementById("search-input");
     const filter = input.value.toUpperCase();
     const cards = document.querySelectorAll(".card");
+    const newContent = document.querySelector("#new");
+
+    // Hide "create new podcast" card when searching
+    if (filter === "") {
+        newContent.style.display = "flex";
+    } else {
+        newContent.style.display = "none";
+    }
 
     cards.forEach(function(card) {
         const cardTitle = card.querySelector("h3").textContent;
@@ -166,22 +175,34 @@ function openPopup(id) {
 
     // Setup iframe to send podcast_id to overview.php
     const iframe = document.querySelector('.iframe-container iframe');
-    iframe.src = 'overview.php?data=' + encodeURIComponent(id) + " " + encodeURIComponent(false);
+    iframe.src = 'overview.php?data=' + encodeURIComponent(id) + " " + encodeURIComponent(false) + " " + encodeURIComponent(modal);
 
     modal.addEventListener('click', closePopupOutside);
 }
 
-function closePopup() {
+function closePopup(reloadParent) {
     const modal = document.querySelector('.modal');
     modal.style.display = 'none';
     modal.removeEventListener('click', closePopupOutside);
+
+    if (reloadParent) window.parent.location.reload();
 }
 
 function closePopupOutside(event) {
     // Check if the click event occurred outside of the iframe
     const contentContainer = document.querySelector('.modal-content');
     if (contentContainer && !contentContainer.contains(event.target)) {
-        closePopup();
+        closePopup(false);
+    }
+}
+
+function closePopupInParent() {
+    // Access the parent window from the iframe
+    const parentWindow = window.parent;
+
+    // Call the closePopup function in the parent window
+    if (parentWindow && typeof parentWindow.closePopup === 'function') {
+        parentWindow.closePopup(true);
     }
 }
 
@@ -193,9 +214,13 @@ function shrinkTextToFit() {
     container.forEach(c => {
         let fontSize = 1.2; // Initial font size
         const text = c.querySelector('h3');
-        while (text.scrollWidth > maxWidth) {
+        while (text.scrollWidth > maxWidth-10) {
             fontSize -= .1;
             text.style.fontSize = fontSize-.1 + 'vw';
         }
     })
 }
+
+// function showWarning(text) {
+//     confirm(text);
+// }

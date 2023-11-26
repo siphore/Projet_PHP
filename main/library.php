@@ -37,11 +37,16 @@ if (filter_has_var(INPUT_GET, 'logout')) {
     </div>
     <a href="?logout" class="cancel">Logout</a>
 
-    <div id="cards-container"></div>
+    <div id="cards-container">
+        <div class="card" id="new">
+            <h3 style="font-size: 0"></h3>
+            <button id="new-content">+</button>
+        </div>
+    </div>
 
     <div class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closePopup()">&#x2573;</span>
+            <span class="close" onclick="closePopup(false);">&#x2573;</span>
             <div class="iframe-container">
                 <iframe width="100%" height="100%"></iframe>
             </div>

@@ -23,6 +23,7 @@
     $title = $jsonFile->title;
     $artists = $jsonFile->artists;
     $imgSrc = $jsonFile->image_url;
+    $audioSrc = $jsonFile->audio_file;
 
     // Edit mode handling
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -30,7 +31,6 @@
         switch ($_POST['action']) {
             case 'editOn':
                 $_SESSION['edit'] = true;
-                // header("Location: overview.php");
                 break;
 
             case 'editOff':
@@ -46,7 +46,7 @@
                     array_push($artistsId, DBManager::getArtistIdFromNames($artist));
                 }
 
-                // Handle the audio upload
+                // Handle the file upload for audios
                 if (isset($_FILES['audio']) && $_FILES['audio']['error'] === UPLOAD_ERR_OK) {
                     $allowedAudioFormats = ['mp3', 'wav', 'ogg']; // Add or modify allowed audio formats as needed
 
@@ -58,7 +58,7 @@
                     if (in_array(strtolower($fileExtension), $allowedAudioFormats)) {
                         if (move_uploaded_file($_FILES['audio']['tmp_name'], $uploadFile)) {
                             // Update the audio file path in the database
-                            $audioFilePath = $uploadFile;
+                            $audioSrc = $uploadFile;
                         } else {
                             echo "Error moving uploaded file.";
                         }
@@ -79,7 +79,7 @@
                     if (in_array(strtolower($fileExtension), $allowedImageFormats)) {
                         if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile)) {
                             // Update the image file path in the database
-                            $imageFilePath = $uploadFile;
+                            $imgSrc = $uploadFile;
                         } else {
                             echo "Error moving uploaded file.";
                         }
@@ -88,12 +88,29 @@
                     }
                 }
 
-
                 // Update DB
-                DBManager::updatePodcast($_SESSION['id'], $newTitle, $artistsId, $newArtists, $audioFilePath, $imageFilePath);
+                DBManager::updatePodcast($_SESSION['id'], $newTitle, $artistsId, $newArtists, $audioSrc, $imgSrc);
                 DBManager::getPodcastData();
                 
                 $_SESSION['edit'] = false;
+
+                // Set a session variable to indicate that the update is complete
+                $_SESSION['update_complete'] = true;
+                break;
+
+            case "delete":
+                // Handle the delete action
+                if (isset($_SESSION['id'])) {
+                    // Delete the podcast and check if deletion was successful
+                    $deleted = DBManager::deletePodcast($_SESSION['id']);
+
+                    if ($deleted) {
+                        $_SESSION['update_complete'] = true;
+                    } else {
+                        // Error occurred during deletion, handle appropriately
+                        echo "Error deleting podcast.";
+                    }
+                }
                 break;
         }
 
@@ -110,51 +127,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Podcast overview</title>
     <link rel="stylesheet" href="overview.css?v=<?php echo time(); ?>">
+    <script src="script.js?v=<?php echo time(); ?>"></script>
+    <script>
+        // Check if the update is complete
+        if (<?php echo (isset($_SESSION['update_complete']) && $_SESSION['update_complete']) ? 'true' : 'false'; ?>) {
+            // Close the popup in the parent window
+            closePopupInParent();
+            <?php $_SESSION['update_complete'] = false; ?>
+        }
+
+        function showWarning(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Show a confirmation dialog
+            const userConfirmed = confirm("Are you sure you want to delete this podcast?");
+
+            console.log(userConfirmed);
+
+            // If the user confirms, proceed with the form submission
+            if (userConfirmed) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+
+    </script>
 </head>
 <body>
     <?php if ($edit === true) { ?>
+        <!-- Edit -->
         <div class="container">
             <h1>Edit</h1>
             <form action="overview.php" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="editOff">
-
                 <!-- Title field -->
                 <div class="form-group">
                     <label for="title">Title:</label>
-                    <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($title); ?>" required>
+                    <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($title); ?>" autocomplete="off" required>
                 </div>
 
                 <!-- Artists field (assuming it's a comma-separated list) -->
                 <div class="form-group">
                     <label for="artists">Artists:</label>
-                    <input type="text" id="artists" name="artists" value="<?php echo htmlspecialchars($artists); ?>" required>
+                    <input type="text" id="artists" name="artists" value="<?php echo htmlspecialchars($artists); ?>" autocomplete="off" required>
                 </div>
 
                 <!-- File input for image -->
                 <div class="form-group">
-                    <label for="image">Select Image:</label>
+                    <label>Select Image:</label>
                     <input type="file" id="image" name="image">
                 </div>
 
                 <!-- File input for audio -->
                 <div class="form-group">
-                    <label for="audio">Select Audio:</label>
+                    <label>Select Audio:</label>
                     <input type="file" id="audio" name="audio">
                 </div>
 
+                <!-- Submit -->
                 <div class="form-group">
-                    <button type="submit">Done</button>
+                    <button type="submit" name="action" value="editOff">Done</button>
                 </div>
             </form>
         </div>
     <?php } else { ?>
+        <!-- Infos -->
         <div class="container">
             <img src="<?php echo $imgSrc ?>">
             <h1><?php echo $title ?></h1>
             <p><?php  echo str_replace(",", ", ", $artists) ?></p>
-            <form action="overview.php" method="post">
-                <input type="hidden" name="action" value="editOn">
-                <button type="submit">Edit</button>
+            <form id="deleteForm" action="overview.php" method="post">
+                <input name="action" value="delete" type="hidden">
+                <button type="submit" name="action" value="editOn">Edit</button>
+                <button class="delete" name="action" value="delete" onclick="showWarning(event);">Delete</button>
             </form>
         </div>
     <?php } ?>

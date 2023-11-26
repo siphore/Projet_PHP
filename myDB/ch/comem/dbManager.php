@@ -218,6 +218,33 @@ class DBManager {
             return false;
         }
     }
+
+    public static function deletePodcast($podcastId) {
+        try {
+            self::$db = self::getDB();
+    
+            // Delete the podcast from the podcasts table
+            $stmt = self::$db->prepare("DELETE FROM podcasts WHERE podcast_id = :podcastId");
+            $stmt->bindParam(':podcastId', $podcastId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Check if any rows were affected (podcast deleted)
+            $rowsAffected = $stmt->rowCount();
+    
+            // You might also want to delete associated records in other tables (e.g., podcast_artists)
+            $stmt = self::$db->prepare("DELETE FROM sqlite_sequence WHERE name = 'podcasts'");
+            $stmt->execute();
+    
+            // Close the database connection
+            self::$db = null;
+    
+            return $rowsAffected; // Returns the number of rows deleted (0 if none)
+        } catch (PDOException $e) {
+            // Handles any database connection or query errors
+            echo "Database error: " . $e->getMessage();
+            return -1;
+        }
+    }    
     
     public static function getArtistIdFromNames($artist) {
         try {

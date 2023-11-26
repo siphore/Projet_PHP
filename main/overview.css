@@ -24,6 +24,22 @@ label {
     margin-bottom: 5px; /* Adjust spacing between labels and inputs */
 }
 
+button {
+    border: 1px solid black;
+    padding: 1vw;
+    border-radius: 5px;
+}
+
+button:hover {
+    transition: .2s ease-out;
+    filter:brightness(90%);
+}
+
+.delete {
+    background-color: red;
+    color: white;
+}
+
 @media (max-height: 600px) {
     img {
         width: 30vw;
