@@ -175,7 +175,7 @@ function openPopup(id) {
 
     // Setup iframe to send podcast_id to overview.php
     const iframe = document.querySelector('.iframe-container iframe');
-    iframe.src = 'overview.php?data=' + encodeURIComponent(id) + " " + encodeURIComponent(false) + " " + encodeURIComponent(modal);
+    iframe.src = 'overview.php?data=' + encodeURIComponent(id) + " " + encodeURIComponent(false);
 
     modal.addEventListener('click', closePopupOutside);
 }
@@ -220,7 +220,3 @@ function shrinkTextToFit() {
         }
     })
 }
-
-// function showWarning(text) {
-//     confirm(text);
-// }

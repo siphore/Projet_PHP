@@ -13,17 +13,19 @@
     if (isset($_GET['data'])) {
         $dataFromParent = explode(" ", $_GET['data']);
         $id = htmlspecialchars($dataFromParent[0]);
-        $edit = $dataFromParent[1];
+        if ($id !== "-1") $edit = $dataFromParent[1];
 
         // Store $id in session
         $_SESSION['id'] = $id;
     }
 
-    $jsonFile = json_decode(file_get_contents("data.json"))[$id-1];
-    $title = $jsonFile->title;
-    $artists = $jsonFile->artists;
-    $imgSrc = $jsonFile->image_url;
-    $audioSrc = $jsonFile->audio_file;
+    if ($id !== "-1") {
+        $jsonFile = json_decode(file_get_contents("data.json"))[$id-1];
+        $title = $jsonFile->title;
+        $artists = $jsonFile->artists;
+        $imgSrc = $jsonFile->image_url;
+        $audioSrc = $jsonFile->audio_file;
+    }
 
     // Edit mode handling
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -34,6 +36,7 @@
                 break;
 
             case 'editOff':
+            case 'new':
                 // Handle the title field
                 if (isset($_POST['title'], $_POST['artists'])) {
                     $newTitle = $_POST['title'];
@@ -41,9 +44,11 @@
                 }
 
                 // Handle the artists field
-                $artistsId = [];
-                foreach(explode(",", $artists) as $artist) {
-                    array_push($artistsId, DBManager::getArtistIdFromNames($artist));
+                if ($id !== "-1") {
+                    $artistsId = [];
+                    foreach(explode(",", $artists) as $artist) {
+                        array_push($artistsId, DBManager::getArtistIdFromNames($artist));
+                    }
                 }
 
                 // Handle the file upload for audios
@@ -89,8 +94,11 @@
                 }
 
                 // Update DB
-                DBManager::updatePodcast($_SESSION['id'], $newTitle, $artistsId, $newArtists, $audioSrc, $imgSrc);
-                DBManager::getPodcastData();
+                if ($id !== "-1") {
+                    DBManager::updatePodcast($_SESSION['id'], $newTitle, $artistsId, $newArtists, $audioSrc, $imgSrc);
+                } else {
+                    DBManager::createPodcast($newTitle, $newArtists, $audioSrc, $imgSrc);
+                }
                 
                 $_SESSION['edit'] = false;
 
@@ -98,7 +106,7 @@
                 $_SESSION['update_complete'] = true;
                 break;
 
-            case "delete":
+            case 'delete':
                 // Handle the delete action
                 if (isset($_SESSION['id'])) {
                     // Delete the podcast and check if deletion was successful
@@ -143,62 +151,95 @@
             // Show a confirmation dialog
             const userConfirmed = confirm("Are you sure you want to delete this podcast?");
 
-            console.log(userConfirmed);
-
             // If the user confirms, proceed with the form submission
-            if (userConfirmed) {
-                document.getElementById('deleteForm').submit();
-            }
+            if (userConfirmed) document.getElementById('deleteForm').submit();
         }
 
     </script>
 </head>
 <body>
-    <?php if ($edit === true) { ?>
-        <!-- Edit -->
+    <?php if ($id !== "-1") { ?>
+        <?php if ($edit === true) { ?>
+            <!-- Edit -->
+            <div class="container">
+                <h1>Edit</h1>
+                <form action="overview.php" method="post" enctype="multipart/form-data">
+                    <!-- Title field -->
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" name="title" value="<?php echo htmlspecialchars($title); ?>" autocomplete="off" required>
+                    </div>
+
+                    <!-- Artists field (assuming it's a comma-separated list) -->
+                    <div class="form-group">
+                        <label for="artists">Artists:</label>
+                        <input type="text" name="artists" value="<?php echo htmlspecialchars($artists); ?>" autocomplete="off" required>
+                    </div>
+
+                    <!-- File input for image -->
+                    <div class="form-group">
+                        <label>Select Image:</label>
+                        <input type="file" name="image">
+                    </div>
+
+                    <!-- File input for audio -->
+                    <div class="form-group">
+                        <label>Select Audio:</label>
+                        <input type="file" name="audio">
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="form-group">
+                        <button type="submit" name="action" value="editOff">Done</button>
+                    </div>
+                </form>
+            </div>
+        <?php } else { ?>
+            <!-- Infos -->
+            <div class="container">
+                <img src="<?php echo $imgSrc ?>">
+                <h1><?php echo $title ?></h1>
+                <p><?php  echo str_replace(",", ", ", $artists) ?></p>
+                <form id="deleteForm" action="overview.php" method="post">
+                    <input name="action" value="delete" type="hidden">
+                    <button type="submit" name="action" value="editOn">Edit</button>
+                    <button class="delete" name="action" value="delete" onclick="showWarning(event);">Delete</button>
+                </form>
+            </div>
+        <?php } ?>
+    <?php } else { ?>
+        <!-- New -->
         <div class="container">
-            <h1>Edit</h1>
+            <h1>New podcast</h1>
             <form action="overview.php" method="post" enctype="multipart/form-data">
                 <!-- Title field -->
                 <div class="form-group">
                     <label for="title">Title:</label>
-                    <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($title); ?>" autocomplete="off" required>
+                    <input type="text" name="title" autocomplete="off" required>
                 </div>
 
                 <!-- Artists field (assuming it's a comma-separated list) -->
                 <div class="form-group">
                     <label for="artists">Artists:</label>
-                    <input type="text" id="artists" name="artists" value="<?php echo htmlspecialchars($artists); ?>" autocomplete="off" required>
+                    <input type="text" name="artists" autocomplete="off" required>
                 </div>
 
                 <!-- File input for image -->
                 <div class="form-group">
                     <label>Select Image:</label>
-                    <input type="file" id="image" name="image">
+                    <input type="file" name="image">
                 </div>
 
                 <!-- File input for audio -->
                 <div class="form-group">
                     <label>Select Audio:</label>
-                    <input type="file" id="audio" name="audio">
+                    <input type="file" name="audio">
                 </div>
 
                 <!-- Submit -->
                 <div class="form-group">
-                    <button type="submit" name="action" value="editOff">Done</button>
+                    <button type="submit" name="action" value="new">Done</button>
                 </div>
-            </form>
-        </div>
-    <?php } else { ?>
-        <!-- Infos -->
-        <div class="container">
-            <img src="<?php echo $imgSrc ?>">
-            <h1><?php echo $title ?></h1>
-            <p><?php  echo str_replace(",", ", ", $artists) ?></p>
-            <form id="deleteForm" action="overview.php" method="post">
-                <input name="action" value="delete" type="hidden">
-                <button type="submit" name="action" value="editOn">Edit</button>
-                <button class="delete" name="action" value="delete" onclick="showWarning(event);">Delete</button>
             </form>
         </div>
     <?php } ?>

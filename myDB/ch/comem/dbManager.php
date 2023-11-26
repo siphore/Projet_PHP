@@ -185,6 +185,48 @@ class DBManager {
         }
     }
 
+    public static function createPodcast($title, $artists, $audioSrc, $imgSrc) {
+        try {
+            self::$db = self::getDB();
+
+            // Insert the new podcast into the 'podcasts' table
+            $stmt = self::$db->prepare("INSERT INTO podcasts (title, image_url, audio_file) VALUES (?, ?, ?)");
+            $stmt->execute([$title, $imgSrc, $audioSrc]);
+
+            // Get the last inserted ID (auto-incremented primary key)
+            $podcastId = self::$db->lastInsertId();
+
+            // Insert artists into the 'artists' table and associate with the podcast in 'podcast_artists' table
+            $artistNames = explode(",", $artists);
+
+            foreach ($artistNames as $artistName) {
+                $nameParts = explode(" ", trim($artistName, " "));
+                $fname = $nameParts[0];
+                $lname = $nameParts[1] ?? '';
+
+                // Insert or update the artist in the 'artists' table
+                $stmt = self::$db->prepare("INSERT OR REPLACE INTO artists (fname, lname) VALUES (?, ?)");
+                $stmt->execute([$fname, $lname]);
+
+                // Get the artist ID
+                $artistId = self::$db->lastInsertId();
+
+                // Associate the artist with the podcast in the 'podcast_artists' table
+                $stmt = self::$db->prepare("INSERT INTO podcast_artists (podcast_id, artist_id) VALUES (?, ?)");
+                $stmt->execute([$podcastId, $artistId]);
+            }
+
+            // Close the database connection
+            self::$db = null;
+
+            return $podcastId;
+        } catch (PDOException $e) {
+            // Handle the exception (e.g., log the error)
+            echo "Error creating podcast: " . $e->getMessage();
+            return false;
+        }
+    }
+
     public static function updatePodcast($id, $title, $artistsId, $artists, $audio, $img) {
         try {
             self::$db = self::getDB();
@@ -211,6 +253,26 @@ class DBManager {
                 $stmt->bindParam(':lname', $lname);
                 $stmt->execute();
             }
+
+            // // Insert artists into the 'artists' table and associate with the podcast in 'podcast_artists' table
+            // $artistNames = explode(",", $artists);
+
+            // foreach ($artistNames as $artistName) {
+            //     $nameParts = explode(" ", trim($artistName, " "));
+            //     $fname = $nameParts[0];
+            //     $lname = $nameParts[1] ?? '';
+
+            //     // Insert or update the artist in the 'artists' table
+            //     $stmt = self::$db->prepare("INSERT OR REPLACE INTO artists (fname, lname) VALUES (?, ?)");
+            //     $stmt->execute([$fname, $lname]);
+
+            //     // Get the artist ID
+            //     $artistId = self::$db->lastInsertId();
+
+            //     // Associate the artist with the podcast in the 'podcast_artists' table
+            //     $stmt = self::$db->prepare("INSERT INTO podcast_artists (podcast_id, artist_id) VALUES (?, ?)");
+            //     $stmt->execute([$id, $artistId]);
+            // }
     
             return true;
         } catch (PDOException $e) {
@@ -222,23 +284,38 @@ class DBManager {
     public static function deletePodcast($podcastId) {
         try {
             self::$db = self::getDB();
-    
+
+            // Get the associated artist IDs
+            $stmt = self::$db->prepare("SELECT artist_id FROM podcast_artists WHERE podcast_id = :podcastId");
+            $stmt->bindParam(':podcastId', $podcastId, PDO::PARAM_INT);
+            $stmt->execute();
+            $artistIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
             // Delete the podcast from the podcasts table
             $stmt = self::$db->prepare("DELETE FROM podcasts WHERE podcast_id = :podcastId");
             $stmt->bindParam(':podcastId', $podcastId, PDO::PARAM_INT);
             $stmt->execute();
 
-            // Check if any rows were affected (podcast deleted)
-            $rowsAffected = $stmt->rowCount();
+            // Delete associated records in the podcast_artists table
+            $stmt = self::$db->prepare("DELETE FROM podcast_artists WHERE podcast_id = :podcastId");
+            $stmt->bindParam(':podcastId', $podcastId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Delete associated artists from the artists table
+            foreach ($artistIds as $artistId) {
+                $stmt = self::$db->prepare("DELETE FROM artists WHERE artist_id = :artistId");
+                $stmt->bindParam(':artistId', $artistId, PDO::PARAM_INT);
+                $stmt->execute();
+            }
     
-            // You might also want to delete associated records in other tables (e.g., podcast_artists)
-            $stmt = self::$db->prepare("DELETE FROM sqlite_sequence WHERE name = 'podcasts'");
+            // Reset the id sequences from sqlite_sequence
+            $stmt = self::$db->prepare("DELETE FROM sqlite_sequence");
             $stmt->execute();
     
             // Close the database connection
             self::$db = null;
     
-            return $rowsAffected; // Returns the number of rows deleted (0 if none)
+            return true; // Returns the number of rows deleted (0 if none)
         } catch (PDOException $e) {
             // Handles any database connection or query errors
             echo "Database error: " . $e->getMessage();

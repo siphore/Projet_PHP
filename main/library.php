@@ -40,7 +40,7 @@ if (filter_has_var(INPUT_GET, 'logout')) {
     <div id="cards-container">
         <div class="card" id="new">
             <h3 style="font-size: 0"></h3>
-            <button id="new-content">+</button>
+            <button id="new-content" onclick="openPopup(-1);">+</button>
         </div>
     </div>
 
