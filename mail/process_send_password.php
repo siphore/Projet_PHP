@@ -2,7 +2,7 @@
 
 // Ce script permet d'envoyer un mail sur le serveur mail : MailHog en local
 // Remarque : Pour que cela fonctionne, il faut avoir démarré le serveur ;-)
-// Libraire permettant l'envoi de mail (Symfony Mailer)
+// Librairie permettant l'envoi de mail (Symfony Mailer)
 require_once './lib/vendor/autoload.php';
 require_once('../myDB/config/autoload.php');
 
@@ -53,8 +53,8 @@ if (DBManager::emailExists($mail)) {
         //->replyTo('replyto@exemple.com')
         ->priority(Email::PRIORITY_HIGH)
         ->subject("Reset password")
-        ->text("Click <a target='_self' href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password")
-        ->html("Click <a target='_self' href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password");
+        ->text("Click <a href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password")
+        ->html("Click <a href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password");
         // ->text("http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR."mail".DIRECTORY_SEPERATOR."reset_password.php?token=$token")
         // ->html("http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR."mail".DIRECTORY_SEPERATOR."reset_password.php?token=$token");
     $result = $mailer->send($email);
