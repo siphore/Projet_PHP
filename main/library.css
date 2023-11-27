@@ -12,13 +12,20 @@ iframe {
 }
 
 /* Navigation bar */
+header {
+    display: flex;
+    align-items: flex-start;
+    position: fixed;
+    width: 100vw;
+    height: 3vw;
+    background-color: #c0c0c0;
+    overflow: hidden;
+}
+
 .navbar {
     display: flex;
-    position: absolute;
-    width: 100vw;
+    width: inherit;
     justify-content: center;
-    align-items: flex-start;
-    overflow: hidden;
 }
 
 .navbar input[type=text] {
@@ -30,7 +37,6 @@ iframe {
     border-bottom-right-radius: 10px;
     color: white;
     background-color: rgb(63, 92, 221);
-    margin-bottom: 5vw;
     font-size: .7vw;
     outline: none;
 }
@@ -47,9 +53,11 @@ iframe {
 
 /* Cards container */
 #cards-container {
-    display: flex;
-    padding-top: 3vw;
+    display: grid;
     justify-content: center;
+    grid-template-columns: repeat(5, 16vw);
+    grid-auto-rows: 27vw;
+    padding-top: 4vw;
 }
 
 /* Cards */
@@ -160,8 +168,8 @@ iframe {
     border: none;
     text-align: left;
     outline: none;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
     transition: .5s ease-out;
 }
 
@@ -191,7 +199,7 @@ iframe {
     background-color: #8f8f8f;
     width: inherit;
     color: white;
-    font-size: .7vw;
+    /* font-size: .7vw; */
     max-height: 0;
     overflow: hidden;
     border-bottom-left-radius: 5px;

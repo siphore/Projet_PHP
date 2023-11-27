@@ -2,7 +2,6 @@
 
 class DBManager {
     private static $db;
-    private const ALL_USERS = 'all';
 
     public static function getDB() {
         if (self::$db === null) {
@@ -49,6 +48,7 @@ class DBManager {
         }
     }
 
+    // Useless
     public static function readFormData($username) {
         try {
             self::$db = self::getDB();
@@ -71,8 +71,6 @@ class DBManager {
     }
 
     public static function updateFormData($username, $password, $email) {
-        // self::deleteFormData(self::ALL_USERS);
-
         try {
             self::$db = self::getDB();
             $stmt = self::$db->prepare("INSERT INTO form_data (username, psw, email) VALUES (:username, :psw, :email)");
@@ -106,8 +104,6 @@ class DBManager {
     }
 
     public static function updatePasswordFormData($email, $token, $tokenExpiry) {
-        // self::deleteFormData(self::ALL_USERS);
-
         try {
             self::$db = self::getDB();
             $stmt = self::$db->prepare("INSERT INTO password_reset (email, token, expiry) VALUES (:email, :token, :tokenExpiry)");
@@ -124,20 +120,15 @@ class DBManager {
         }
     }
 
+    // Useless
     public static function deleteFormData($username) {
         try {
             self::$db = self::getDB();
 
-            if ($username == self::ALL_USERS) {
-                // Prepare and execute a query to delete all records in the form_data table
-                $stmt = self::$db->prepare("DELETE FROM form_data");
-                $stmt->execute();
-            } else {
-                // Prepare and execute a query to delete data based on the username
-                $stmt = self::$db->prepare("DELETE FROM form_data WHERE username = :username");
-                $stmt->bindParam(':username', $username);
-                $stmt->execute();
-            }
+            // Prepare and execute a query to delete data based on the username
+            $stmt = self::$db->prepare("DELETE FROM form_data WHERE username = :username");
+            $stmt->bindParam(':username', $username);
+            $stmt->execute();
 
             // Check if any rows were affected (record deleted)
             $rowsAffected = $stmt->rowCount();

@@ -31,12 +31,13 @@ if (filter_has_var(INPUT_GET, 'logout')) {
     <link rel="stylesheet" href="library.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>"></script>
 </head>
-<body onload="readCSV();">
+<header>
+    <a href="?logout" class="cancel">Logout</a>
     <div class="navbar">
         <input type="text" id="search-input" placeholder="Rechercher..." oninput="filterCards();">
     </div>
-    <a href="?logout" class="cancel">Logout</a>
-
+</header>
+<body onload="readCSV();">
     <div id="cards-container">
         <div class="card" id="new">
             <h3 style="font-size: 0"></h3>
