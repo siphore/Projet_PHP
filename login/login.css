@@ -83,6 +83,19 @@ img.avatar {
   font-weight: bold;
 }
 
+.text {
+  font-size: 1vw;
+}
+
+li {
+  list-style-type: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
 /* Change styles for span and cancel button on extra small screens */
 @media screen and (max-width: 300px) {
   span.psw {

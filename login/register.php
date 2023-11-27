@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <link rel="stylesheet" href="login.css?v=<?php echo time(); ?>">
 </head>
 <body>
@@ -12,10 +12,12 @@
 
     <div id="login-container">
         <form action="process_form_register.php" method="post" autocomplete="off">
+            <!-- Image -->
             <div class="img-container">
                 <img src="../img/login_img.png" alt="Avatar" class="avatar">
             </div>
 
+            <!-- Inputs -->
             <div class="container">
                 <label for="email"><span class="bold">Email</span></label>
                 <input type="text" placeholder="Enter Email" name="email" required autofocus>
@@ -29,8 +31,9 @@
                 <button type="submit">Register</button>
             </div>
 
+            <!-- Footer -->
             <div class="container" style="background-color:#f1f1f1; text-align: end">
-                <span>Already registered ? <a href="login.php">Login</a></span>
+                <span class="text">Already registered ? <a href="login.php">Login</a></span>
             </div>
         </form>
     </div>

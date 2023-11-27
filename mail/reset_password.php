@@ -53,7 +53,7 @@ die("Database connection error: " . $e->getMessage());
                 <label for="rPassword"><span class="bold">Repeat password</span></label>
                 <input type="password" placeholder="Confirm password" name="rPassword" required>
                     
-                <button type="submit">send</button>
+                <button type="submit">Send</button>
             </div>
         </form>
     </div>
