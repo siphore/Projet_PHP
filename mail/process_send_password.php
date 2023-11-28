@@ -55,8 +55,6 @@ if (DBManager::emailExists($mail)) {
         ->subject("Reset password")
         ->text("Click <a href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password")
         ->html("Click <a href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password");
-        // ->text("http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR."mail".DIRECTORY_SEPERATOR."reset_password.php?token=$token")
-        // ->html("http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR."mail".DIRECTORY_SEPERATOR."reset_password.php?token=$token");
     $result = $mailer->send($email);
 
     if ($result==null) echo "Un mail de récupération a été envoyé ! <a href='http://localhost:8025'>voir le mail</a>";
