@@ -36,7 +36,7 @@ if (DBManager::emailExists($mail)) {
 
     // Generates Token and Send Email
     $token = bin2hex(random_bytes(16)); // Generate a random token
-    $tokenExpiry = date("Y-m-d H:i:s", time() + 60 * 30);; // Token expires in 1 hour
+    $tokenExpiry = date("Y-m-d H:i:s", time() + 60 * 30);; // Token expires in 30 minutes 
     
     // Sends data to database
     DBManager::updatePasswordFormData($mail, $token, $tokenExpiry);
@@ -46,7 +46,7 @@ if (DBManager::emailExists($mail)) {
     // Mail construction
     $mailer = new Mailer($transport);
     $email = (new Email())
-        ->from('lohann.kasper@heig-vd.ch')
+        ->from('podcastHelp@heig-vd.ch')
         ->to("$mail")
         //->cc('cc@exemple.com')
         //->bcc('bcc@exemple.com')
