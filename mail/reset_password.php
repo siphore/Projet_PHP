@@ -19,12 +19,12 @@ try {
         die("Token not found");
     }
 
-if (strtotime($user["expiry"]) <= time()) {
-    die("Token has expired");
-}
+    if (strtotime($user["expiry"]) <= time()) {
+        die("Token has expired");
+    }
 
 } catch (PDOException $e) {
-die("Database connection error: " . $e->getMessage());
+    die("Database connection error: " . $e->getMessage());
 }
 ?>
 
