@@ -20,7 +20,7 @@
             <!-- Inputs -->
             <div class="container">
                 <label for="email"><span class="bold">Email</span></label>
-                <input type="text" placeholder="Enter Email" name="email" required autofocus>
+                <input type="text" placeholder="Enter Email" name="email" required autofocus />
 
                 <label for="uname"><span class="bold">Username</span></label>
                 <input type="text" placeholder="Enter Username" name="uname" required>

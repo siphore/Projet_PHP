@@ -18,7 +18,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     } else {
         // Password does not match, display an error message
-        echo "Invalid username or password. Please try again.";
+        $msg = "Invalid username or password. Please try again.";
+        echo "<script>";
+        echo "async function showError(msg) {alert(msg); return true;}";
+        echo "(async function getError() {const ok = await showError('".$msg."'); if (ok) location.href = 'login.php';}());";
+        echo "</script>";
     }
 }
 

@@ -13,9 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if the username already exists in the database
     if (DBManager::usernameExists($username)) {
-        echo "Username already in use. Please choose a different username.";
+        $msg = "Username already in use. Please choose a different username.";
+        echo "<script>";
+        echo "async function showError(msg) {alert(msg); return true;}";
+        echo "(async function getError() {const ok = await showError('".$msg."'); if (ok) location.href = 'register.php';}());";
+        echo "</script>";
     } else if (DBManager::emailExists($email)) {
-        echo "Email already in use. Please choose a different email.";
+        $msg = "Email already in use. Please choose a different email.";
+        echo "<script>";
+        echo "async function showError(msg) {alert(msg); return true;}";
+        echo "(async function getError() {const ok = await showError('".$msg."'); if (ok) location.href = 'register.php';}());";
+        echo "</script>";
     } else {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
@@ -25,7 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: login.php");
         } else {
             // Registration failed
-            echo "Registration failed. Please try again later.";
+            $msg = "Registration failed. Please try again later.";
+            echo "<script>";
+            echo "async function showError(msg) {alert(msg); return true;}";
+            echo "(async function getError() {const ok = await showError('".$msg."'); if (ok) location.href = 'register.php';}());";
+            echo "</script>";
         }
     }
 }
