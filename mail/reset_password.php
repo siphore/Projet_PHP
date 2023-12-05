@@ -2,12 +2,14 @@
 
 require_once('../myDB/config/autoload.php');
 
+// retrieves the token from the url 
 $token = $_GET["token"];
 
 try {
     $db = DBManager::getDB();
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // looks for the same token in the database 
     $sql = "SELECT * FROM password_reset WHERE token = :token";
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':token', $token, PDO::PARAM_STR);
@@ -15,10 +17,12 @@ try {
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // checks if an user was found
     if ($user === false) {
         die("Token not found");
     }
 
+    // checks if the token is still available 
     if (strtotime($user["expiry"]) <= time()) {
         die("Token has expired");
     }

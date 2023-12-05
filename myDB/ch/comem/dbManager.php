@@ -32,6 +32,7 @@ class DBManager {
         }
     }
 
+    // creates the password reset table 
     public static function createPasswordFormData() {
         try {
             self::$db = self::getDB(); 
@@ -70,6 +71,7 @@ class DBManager {
         }
     }
 
+    // inserts the registration data into database
     public static function updateFormData($username, $password, $email) {
         try {
             self::$db = self::getDB();
@@ -87,6 +89,7 @@ class DBManager {
         }
     }
 
+
     public static function updatePassword ($password, $email) {
         try {
             self::$db = self::getDB();
@@ -103,6 +106,7 @@ class DBManager {
         }
     }
 
+    // 
     public static function updatePasswordFormData($email, $token, $tokenExpiry) {
         try {
             self::$db = self::getDB();
