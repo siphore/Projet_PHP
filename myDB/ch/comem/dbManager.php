@@ -218,7 +218,7 @@ class DBManager {
         }
     }
 
-    public static function updatePodcast($id, $title, $artistsId, $artists, $audio, $img) {
+    public static function updatePodcast($id, $title, $artistsId, $newArtists, $audio, $img) {
         try {
             self::$db = self::getDB();
 
@@ -230,44 +230,86 @@ class DBManager {
             $stmt->bindParam(':audio_file', $audio);
             $stmt->execute();
 
+            // Delete from podcast_artists
+            $stmt = self::$db->prepare("DELETE FROM podcast_artists WHERE podcast_id = :podcast_id");
+            $stmt->bindParam('podcast_id', $id);
+            $stmt->execute();
+            
             // Update artists
-            $artists = explode(",", $artists);
+            $artists = explode(",", $newArtists);
             for ($i = 0; $i < count($artists); ++$i) {
                 $artist = explode(" ", $artists[$i]);
                 $fname = $artist[0];
                 $lname = $artist[1];
                 $artistId = $artistsId[$i];
 
-                $stmt = self::$db->prepare("UPDATE artists SET fname = :fname, lname = :lname WHERE artist_id = :artist_id");
+                // If artist already in DB
+                if (self::isArtistInDB($artistId)) {
+                    // Update artist name
+                    $stmt = self::$db->prepare("UPDATE artists SET fname = :fname, lname = :lname WHERE artist_id = :artist_id");
+                    $stmt->bindParam(':artist_id', $artistId);
+                    $stmt->bindParam(':fname', $fname);
+                    $stmt->bindParam(':lname', $lname);
+                    $stmt->execute();
+                } else {
+                    // Insert into artists
+                    $stmt = self::$db->prepare("INSERT INTO artists (fname, lname) VALUES (:fname, :lname)");
+                    $stmt->bindParam(':fname', $fname);
+                    $stmt->bindParam(':lname', $lname);
+                    $stmt->execute();
+
+                    $artistId = self::getLastArtist()['artist_id'];
+                }
+
+                // Insert into podcast_artists
+                $stmt = self::$db->prepare("INSERT INTO podcast_artists (podcast_id, artist_id) VALUES (:podcast_id, :artist_id)");
+                $stmt->bindParam(':podcast_id', $id);
                 $stmt->bindParam(':artist_id', $artistId);
-                $stmt->bindParam(':fname', $fname);
-                $stmt->bindParam(':lname', $lname);
                 $stmt->execute();
             }
 
-            // // Insert artists into the 'artists' table and associate with the podcast in 'podcast_artists' table
-            // $artistNames = explode(",", $artists);
-
-            // foreach ($artistNames as $artistName) {
-            //     $nameParts = explode(" ", trim($artistName, " "));
-            //     $fname = $nameParts[0];
-            //     $lname = $nameParts[1] ?? '';
-
-            //     // Insert or update the artist in the 'artists' table
-            //     $stmt = self::$db->prepare("INSERT OR REPLACE INTO artists (fname, lname) VALUES (?, ?)");
-            //     $stmt->execute([$fname, $lname]);
-
-            //     // Get the artist ID
-            //     $artistId = self::$db->lastInsertId();
-
-            //     // Associate the artist with the podcast in the 'podcast_artists' table
-            //     $stmt = self::$db->prepare("INSERT INTO podcast_artists (podcast_id, artist_id) VALUES (?, ?)");
-            //     $stmt->execute([$id, $artistId]);
-            // }
+            // Reset the id sequences from sqlite_sequence
+            $stmt = self::$db->prepare("DELETE FROM sqlite_sequence");
+            $stmt->execute();
     
             return true;
         } catch (PDOException $e) {
             error_log("Error updating podcast: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private static function isArtistInDB($artistId) {
+        try {
+            self::$db = self::getDB();
+    
+            // Check if the artist with the given ID exists
+            $stmt = self::$db->prepare("SELECT COUNT(*) FROM artists WHERE artist_id = :artist_id");
+            $stmt->bindParam(':artist_id', $artistId, PDO::PARAM_INT);
+            $stmt->execute();
+            $count = $stmt->fetchColumn();
+    
+            return $count > 0;
+        } catch (PDOException $e) {
+            // Handle any database connection or query errors
+            echo "Database error: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    private static function getLastArtist() {
+        try {
+            self::$db = self::getDB();
+            $stmt = self::$db->query("SELECT * FROM artists ORDER BY artist_id DESC LIMIT 1");
+            
+            // Fetch the result as an associative array
+            $lastEntry = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+            // $lastEntry now contains the data of the last entry
+            return $lastEntry;
+        } catch (PDOException $e) {
+            // Handle any database connection or query errors
+            echo "Database error: " . $e->getMessage();
             return false;
         }
     }
@@ -302,17 +344,50 @@ class DBManager {
             // Reset the id sequences from sqlite_sequence
             $stmt = self::$db->prepare("DELETE FROM sqlite_sequence");
             $stmt->execute();
+
+            // Rearrange podcast ids
+            self::rearrangePodcastIds();
     
             // Close the database connection
             self::$db = null;
     
-            return true; // Returns the number of rows deleted (0 if none)
+            return true;
         } catch (PDOException $e) {
             // Handles any database connection or query errors
             echo "Database error: " . $e->getMessage();
-            return -1;
+            return false;
         }
-    }    
+    }
+
+    private static function rearrangePodcastIds() {
+        try {
+            self::$db = self::getDB();
+    
+            // Get the remaining podcasts after deletion
+            $stmt = self::$db->prepare("SELECT podcast_id FROM podcasts ORDER BY podcast_id");
+            $stmt->execute();
+            $podcastIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    
+            // Update the podcast IDs to remove the gap
+            foreach ($podcastIds as $index => $podcastId) {
+                $newPodcastId = $index + 1;
+    
+                $stmt = self::$db->prepare("UPDATE podcasts SET podcast_id = :newPodcastId WHERE podcast_id = :podcastId");
+                $stmt->bindParam(':newPodcastId', $newPodcastId, PDO::PARAM_INT);
+                $stmt->bindParam(':podcastId', $podcastId, PDO::PARAM_INT);
+                $stmt->execute();
+            }
+    
+            // Close the database connection
+            self::$db = null;
+    
+            return true;
+        } catch (PDOException $e) {
+            // Handle any database connection or query errors
+            echo "Database error: " . $e->getMessage();
+            return false;
+        }
+    }
     
     public static function getArtistIdFromNames($artist) {
         try {
@@ -328,7 +403,11 @@ class DBManager {
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result['artist_id'];
+            if ($result) {
+                return $result['artist_id'];
+            } else {
+                return -1;
+            }
         } catch (PDOException $e) {
             // Handles any database connection or query errors
             echo "Database error: " . $e->getMessage();

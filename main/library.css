@@ -41,14 +41,26 @@ header {
     outline: none;
 }
 
-.cancel {
+.top-buttons {
     position: absolute;
+    display: flex;
+    justify-content: start;
+}
+
+.cancel {
+    display: flex;
+    align-items: center;
+    text-align: center;
     padding: .5vw;
     margin: .5vw;
     background-color: rgb(119, 0, 103);
     text-decoration: none;
     border-radius: 10px;
     color: white;
+}
+
+.red {
+    background-color: red;
 }
 
 /* Cards container */
@@ -121,9 +133,9 @@ header {
 }
 
 .card img:hover {
-    width: 9vw;
-    height: 9vw;
-    transition: .2s ease-out;
+    /* width: 9vw;
+    height: 9vw; */
+    scale: 1.1;
 }
 
 /* Audio */

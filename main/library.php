@@ -20,6 +20,14 @@ if (filter_has_var(INPUT_GET, 'logout')) {
     exit();
 }
 
+// Delete account handling
+if (filter_has_var(INPUT_GET, 'delete')) {
+    DBManager::deleteFormData($_SESSION['username']);
+    session_destroy();
+    header("Location: ../login/register.php");
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +40,10 @@ if (filter_has_var(INPUT_GET, 'logout')) {
     <script src="script.js?v=<?php echo time(); ?>"></script>
 </head>
 <header>
-    <a href="?logout" class="cancel">Logout</a>
+    <div class="top-buttons">
+        <a href="?logout" class="cancel">Logout</a>
+        <a href="?delete" class="cancel red">Delete profile</a>
+    </div>
     <div class="navbar">
         <input type="text" id="search-input" placeholder="Rechercher..." oninput="filterCards();">
     </div>

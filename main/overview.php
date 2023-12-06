@@ -47,7 +47,8 @@
                 if ($id !== "-1") {
                     $artistsId = [];
                     foreach(explode(",", $artists) as $artist) {
-                        array_push($artistsId, DBManager::getArtistIdFromNames($artist));
+                        $artistId = DBManager::getArtistIdFromNames($artist);
+                        array_push($artistsId, $artistId);
                     }
                 }
 
@@ -95,8 +96,10 @@
 
                 // Update DB
                 if ($id !== "-1") {
+                    // Update existing
                     DBManager::updatePodcast($_SESSION['id'], $newTitle, $artistsId, $newArtists, $audioSrc, $imgSrc);
                 } else {
+                    // Create new
                     DBManager::createPodcast($newTitle, $newArtists, $audioSrc, $imgSrc);
                 }
                 
@@ -167,13 +170,13 @@
                     <!-- Title field -->
                     <div class="form-group">
                         <label for="title">Title:</label>
-                        <input type="text" name="title" value="<?php echo htmlspecialchars($title); ?>" autocomplete="off" required>
+                        <input type="text" name="title" value="<?php echo htmlspecialchars($title); ?>" autocomplete="off" autofocus required />
                     </div>
 
                     <!-- Artists field (assuming it's a comma-separated list) -->
                     <div class="form-group">
                         <label for="artists">Artists:</label>
-                        <input type="text" name="artists" value="<?php echo htmlspecialchars($artists); ?>" autocomplete="off" required>
+                        <input type="text" name="artists" value="<?php echo htmlspecialchars($artists); ?>" autocomplete="off">
                     </div>
 
                     <!-- File input for image -->
