@@ -1,8 +1,5 @@
 <?php
 
-// Ce script permet d'envoyer un mail sur le serveur mail : MailHog en local
-// Remarque : Pour que cela fonctionne, il faut avoir démarré le serveur ;-)
-// Librairie permettant l'envoi de mail (Symfony Mailer)
 require_once './lib/vendor/autoload.php';
 require_once('../myDB/config/autoload.php');
 
@@ -10,7 +7,7 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 
-// Is user on windows or mac
+// Is user on windows or mac 
 $user_agent = getenv("HTTP_USER_AGENT");
 if (strpos($user_agent, "Win") !== FALSE) $os = "Windows";
 else if (strpos($user_agent, "Mac") !== FALSE) $os = "Mac";
@@ -48,11 +45,9 @@ if (DBManager::emailExists($mail)) {
     $email = (new Email())
         ->from('podcastHelp@heig-vd.ch')
         ->to("$mail")
-        //->cc('cc@exemple.com')
-        //->bcc('bcc@exemple.com')
-        //->replyTo('replyto@exemple.com')
         ->priority(Email::PRIORITY_HIGH)
         ->subject("Reset password")
+        //the ports in the url must be changed depending on the users settings in mamp
         ->text("Click <a href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password")
         ->html("Click <a href='http://localhost:".($os === "Windows" ? "80" : "8888").DIRECTORY_SEPARATOR.$root."reset_password.php?token=$token'>here </a> to reset your password")
         ;

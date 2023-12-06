@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "async function showError(msg) {alert(msg); return true;}";
         echo "(async function getError() {const ok = await showError('".$msg."'); if (ok) location.href = 'register.php';}());";
         echo "</script>";
+    // Checks if the email exists already in the database
     } else if (DBManager::emailExists($email)) {
         $msg = "Email already in use. Please choose a different email.";
         echo "<script>";
@@ -25,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "(async function getError() {const ok = await showError('".$msg."'); if (ok) location.href = 'register.php';}());";
         echo "</script>";
     } else {
+        // turns the password into a hashed password
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
         // Insert the username and hashed password into the database
