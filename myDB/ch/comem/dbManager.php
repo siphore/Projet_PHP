@@ -6,10 +6,6 @@ class DBManager {
     public static function getDB() {
         if (self::$db === null) {
             $config = parse_ini_file("../myDB/config/db.ini");
-            // echo $config["dsn"]."<br>";
-            // $dbPath = str_replace('|', DIRECTORY_SEPARATOR, $config["dsn"]);
-            // echo $dbPath."<br>";
-            // self::$db = new PDO($dbPath);
             self::$db = new PDO($config["dsn"]);
         }
 
@@ -32,7 +28,7 @@ class DBManager {
         }
     }
 
-    // creates the password reset table 
+    // Creates the password reset table 
     public static function createPasswordFormData() {
         try {
             self::$db = self::getDB(); 
@@ -49,29 +45,7 @@ class DBManager {
         }
     }
 
-    // Useless
-    public static function readFormData($username) {
-        try {
-            self::$db = self::getDB();
-            $stmt = self::$db->prepare("SELECT * FROM form_data WHERE username = :username");
-            $stmt->bindParam(':username', $username);
-            $stmt->execute();
-
-            // Fetch the data
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            // Close the database connection
-            self::$db = null;
-
-            return $data;
-        } catch (PDOException $e) {
-            // Handles any database connection or query errors
-            echo "Database error: " . $e->getMessage();
-            return false;
-        }
-    }
-
-    // inserts the registration data into database
+    // Inserts the registration data into database
     public static function updateFormData($username, $password, $email) {
         try {
             self::$db = self::getDB();
@@ -106,7 +80,7 @@ class DBManager {
         }
     }
 
-    // 
+    // Updates password_reset table
     public static function updatePasswordFormData($email, $token, $tokenExpiry) {
         try {
             self::$db = self::getDB();
@@ -124,7 +98,6 @@ class DBManager {
         }
     }
 
-    // Useless
     public static function deleteFormData($username) {
         try {
             self::$db = self::getDB();
@@ -139,8 +112,9 @@ class DBManager {
 
             // Close the database connection
             self::$db = null;
-
-            return $rowsAffected; // Returns the number of rows deleted (0 if none)
+            
+            // Returns the number of rows deleted (0 if none)
+            return $rowsAffected;
         } catch (PDOException $e) {
             // Handles any database connection or query errors
             echo "Database error: " . $e->getMessage();
@@ -306,10 +280,9 @@ class DBManager {
             self::$db = self::getDB();
             $stmt = self::$db->query("SELECT * FROM artists ORDER BY artist_id DESC LIMIT 1");
             
-            // Fetch the result as an associative array
             $lastEntry = $stmt->fetch(PDO::FETCH_ASSOC);
         
-            // $lastEntry now contains the data of the last entry
+            // $lastEntry now contains the data of the last artist added
             return $lastEntry;
         } catch (PDOException $e) {
             // Handle any database connection or query errors
