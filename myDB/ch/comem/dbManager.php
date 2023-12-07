@@ -432,6 +432,25 @@ class DBManager {
         }
     }
 
+    public static function getEmailByToken($token) {
+        try {
+            // Prepare a SELECT query to retrieve the email associated with the token
+            self::$db = self::getDB();
+            $query = self::$db->prepare("SELECT email FROM password_reset WHERE token = :token");
+            $query->bindParam(':token', $token, PDO::PARAM_STR);
+            $query->execute();
+    
+            // Fetch the result
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+    
+            // Return the email if the token is found, or null if the token is not found
+            return ($result !== false) ? $result['email'] : null;
+        } catch (PDOException $e) {
+            // Handle any database errors
+            die("Database error: " . $e->getMessage());
+        }
+    }
+
     public static function getHashedPassword($username) {
         try {
             self::$db = self::getDB();
