@@ -12,4 +12,4 @@ Placez le fichier du projet dans un répertoire sous htdocs
 
 ## Accès au site pour M. Hess
 nom d'utilisateur : jph\
-mot de passe : 5.5svp
+mot de passe : Jph5.5
